@@ -1,0 +1,81 @@
+<!--
+  قالب: قبل وبعد
+  مقارنة قبل/بعد على كت‑أواي
+
+  اللي تغيّره: الكارت اللي بتشرحه الأول لازم يبقى أول عنصر في الـHTML عشان يروح يمين.
+  التوقيت: كل رقم في AT (أو في نداءات rise) هو ثواني من بداية المشهد، بتاخدها من words.txt.
+  الحجم: مش محتاج تحدّد scale — الكيت بياخده من project.json.
+-->
+<meta charset="utf-8"><title>قبل وبعد</title>
+<link rel="stylesheet" href="../fonts/fonts.css"><link rel="stylesheet" href="../tokens/digitalflow.css"><link rel="stylesheet" href="../scenes/base.css">
+<style>
+  /* Two states of the same thing, side by side. In RTL "قبل" goes on the RIGHT because
+     it is the one explained first — put it left and the second card hangs alone on the
+     wrong side until it arrives. */
+  .root { position:absolute; inset:0; overflow:hidden; will-change:opacity; }
+  .cutbg{ position:absolute; inset:0; background:var(--df-bg); }
+  .wrap { position:absolute; inset:0; display:flex; flex-direction:column;
+          align-items:center; justify-content:center; padding:60px 110px; }
+  .h    { font-size:36px; font-weight:700; color:var(--df-ink); letter-spacing:-.4px;
+          margin-bottom:30px; will-change:opacity,transform; }
+  .cols { display:flex; gap:28px; width:1660px; align-items:stretch; }
+  .c    { flex:1; border-radius:var(--df-r-lg); background:var(--df-surface);
+          border:1px solid var(--df-border); box-shadow:var(--df-shadow-card);
+          padding:28px 32px; display:flex; flex-direction:column;
+          will-change:opacity,transform; }
+  .c.good { box-shadow:var(--df-shadow-raised); border-color:#CFE9E4; }
+  .tag  { display:inline-flex; align-self:flex-start; align-items:center; gap:9px;
+          font-size:20px; font-weight:700; padding:8px 16px; border-radius:var(--df-r-pill); }
+  .c.bad  .tag { background:var(--df-divider); color:var(--df-gray); }
+  .c.good .tag { background:var(--df-gradient); color:#fff; box-shadow:var(--df-shadow-glow); }
+  .q    { margin-top:18px; padding:20px 22px; border-radius:var(--df-r-md);
+          background:var(--df-divider); border:1px solid var(--df-border);
+          font-size:24px; font-weight:600; line-height:1.55; color:var(--df-ink-2); }
+  .c.good .q { background:rgba(34,179,152,.06); border-color:#CFE9E4; color:var(--df-ink); }
+  .res  { margin-top:auto; padding-top:20px; display:flex; align-items:center; gap:12px;
+          font-size:23px; font-weight:700; will-change:opacity,transform; }
+  .res .i { width:30px; height:30px; border-radius:var(--df-r-pill); flex:0 0 auto;
+            display:flex; align-items:center; justify-content:center; }
+  .res .i svg { width:16px; height:16px; stroke-width:2.8; fill:none;
+                stroke-linecap:round; stroke-linejoin:round; }
+  .c.bad  .res { color:#B4494D; } .c.bad  .res .i { background:#FDECEC; }
+  .c.bad  .res .i svg { stroke:#E5484D; }
+  .c.good .res { color:#0B8A96; } .c.good .res .i { background:rgba(34,179,152,.14); }
+  .c.good .res .i svg { stroke:#22A98F; }
+</style>
+<div class="root" id="root"><div class="cutbg"></div><div class="glow" id="g1"></div><div class="glow2" id="g2"></div>
+  <div class="wrap">
+    <div class="h" id="h">نفس الأداة — والفرق كله في <span class="accent">اللي كتبته</span></div>
+    <div class="cols">
+      <div class="c bad" id="c1">
+        <span class="tag">قبل</span>
+        <div class="q">«اعملي أداة تسجّل المواعيد»</div>
+        <div class="res" id="r1"><span class="i"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></span>شاشة إنجليزي، تصميم عشوائي، ومفيش حاجة زي اللي في دماغك</div>
+      </div>
+      <div class="c good" id="c2">
+        <span class="tag">بعد</span>
+        <div class="q">«نظام مواعيد لعيادة أسنان. المستخدم: سكرتيرة مش تقنية. شاشتين: حجز وقايمة اليوم. عربي RTL. أهم حاجة: البساطة.»</div>
+        <div class="res" id="r2"><span class="i"><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg></span>شغّال من أول تنفيذ — وبيوفّر كريدتس</div>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="../scenes/anim.js"></script>
+<script>
+(() => {
+  const { win, rise, drift } = window.DF;
+  const root=document.getElementById('root'); const G=id=>document.getElementById(id);
+  const OUT=15.6;
+  window.SCENE={ width:1920, height:1080, duration:16.3,
+    seek(t){ drift(G('g1'),G('g2'),t);
+      rise(G('h'), t,0.00,0.55,16);
+      rise(G('c1'),t,0.70,0.65,24);   // "قبل" — explained first, so it sits on the right
+      rise(G('r1'),t,4.30,0.5,14);
+      rise(G('c2'),t,7.20,0.65,24);
+      rise(G('r2'),t,12.10,0.5,14);
+      root.style.opacity=win(t,0,0.45)*(1-win(t,OUT,0.6));
+    }
+  };
+  window.SCENE.seek(0);
+})();
+</script>

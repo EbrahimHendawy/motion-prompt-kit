@@ -1,0 +1,63 @@
+<!--
+  قالب: الشاشة المقسومة
+  بانل بياخد نص الإطار
+
+  اللي تغيّره: ده الوحيد اللي محتاج تحرّك V1 في المونتاج: Zoom 0.58 و Position X لليمين.
+  التوقيت: كل رقم في AT (أو في نداءات rise) هو ثواني من بداية المشهد، بتاخدها من words.txt.
+  الحجم: مش محتاج تحدّد scale — الكيت بياخده من project.json.
+-->
+<meta charset="utf-8"><title>الشاشة المقسومة</title>
+<link rel="stylesheet" href="../fonts/fonts.css"><link rel="stylesheet" href="../tokens/digitalflow.css"><link rel="stylesheet" href="../scenes/base.css">
+<style>
+  /* The only pattern here that is NOT overlay-only: the panel takes the left 42% of the
+     frame, so in Resolve V1 has to be scaled to ~0.62 and pushed right, otherwise the
+     panel lands on top of him. Everything else in this library composites as-is. */
+  .panel { position:absolute; left:0; top:0; bottom:0; width:806px;
+           background:var(--df-bg); border-left:1px solid var(--df-border);
+           padding:96px 72px; display:flex; flex-direction:column; justify-content:center;
+           will-change:opacity,transform; }
+  .eyebrow { font-size:21px; font-weight:700; color:var(--df-gray); letter-spacing:.4px;
+             will-change:opacity,transform; }
+  .h     { margin-top:14px; font-size:54px; font-weight:700; color:var(--df-ink);
+           line-height:1.2; letter-spacing:-1px; will-change:opacity,transform; }
+  .rule  { height:1px; background:var(--df-border); margin:28px 0; }
+  .b     { display:flex; align-items:flex-start; gap:14px; margin-top:20px;
+           font-size:25px; font-weight:600; color:var(--df-ink-2); line-height:1.45;
+           will-change:opacity,transform; }
+  .b .n  { flex:0 0 auto; width:34px; height:34px; border-radius:var(--df-r-pill);
+           background:var(--df-gradient); color:#fff; font-size:17px; font-weight:700;
+           display:flex; align-items:center; justify-content:center;
+           box-shadow:var(--df-shadow-glow); }
+  .note  { margin-top:auto; padding-top:26px; font-size:20px; font-weight:600;
+           color:var(--df-gray); will-change:opacity,transform; }
+</style>
+<div class="panel" id="p">
+  <div class="eyebrow" id="e">قبل ما تفتح الأداة</div>
+  <div class="h" id="h">اكتب المشكلة<br>في <span class="accent">جملة واحدة</span></div>
+  <div class="rule"></div>
+  <div class="b" data-b><span class="n">١</span><div>مين اللي هيستخدمه فعلاً</div></div>
+  <div class="b" data-b><span class="n">٢</span><div>إيه اللي بيضيع منه دلوقتي</div></div>
+  <div class="b" data-b><span class="n">٣</span><div>إيه اللي لو حصل يبقى النظام نجح</div></div>
+  <div class="note" id="n">لو مش عارف تكتبها في جملة — الأداة مش هتعرف تعملها</div>
+</div>
+<script src="../scenes/anim.js"></script>
+<script>
+(() => {
+  const { win, rise } = window.DF;
+  const p=document.getElementById('p'); const G=id=>document.getElementById(id);
+  const bs=[...document.querySelectorAll('[data-b]')];
+  const AT=[2.4,5.0,7.7];
+  const OUT=12.0;
+  window.SCENE={ width:1920, height:1080, duration:12.8,
+    seek(t){ const q=win(t,0,0.7);
+      p.style.opacity=q*(1-win(t,OUT,0.6));
+      p.style.transform=`translateX(${(1-q)*-90}px)`;   // slides in off the left edge
+      rise(G('e'),t,0.10,0.5,12);
+      rise(G('h'),t,0.45,0.65,22);
+      bs.forEach((el,i)=>rise(el,t,AT[i],0.5,14));
+      rise(G('n'),t,10.0,0.5,12);
+    }
+  };
+  window.SCENE.seek(0);
+})();
+</script>

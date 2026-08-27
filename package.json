@@ -1,0 +1,10 @@
+{
+  "name": "vibe-anim-kit",
+  "version": "1.0.0",
+  "description": "أنيميشن جرافيك على فيديو talking-head عربي — HTML/CSS إلى ProRes 4444 بألفا إلى تايملاين",
+  "private": true,
+  "type": "commonjs",
+  "dependencies": {
+    "puppeteer-core": "^25.8.0"
+  }
+}

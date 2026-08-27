@@ -1,0 +1,62 @@
+<!--
+  قالب: كت‑أواي كامل
+  بيغطي الشاشة — للمقارنات والجداول واللحظات اللي محتاجة مساحة.
+
+  اللي تغيّره: عدد الكروت ومحتواها وتوقيتها.
+  التوقيت: يدخل مع أول كلمة في الفكرة ويخرج بعد آخر كلمة فيها.
+  حدّ الاستخدام: ٢٠–٣٥٪ من زمن الفيديو بالكتير — بيغطي المتكلم.
+
+  انتبه: خلفية المشهد على .cutbg جوه .root — مش على body. الخلفية اللي على body
+  بتتنقل لـcanvas الصفحة اللي برّه الـopacity group، فالفيد أوت بيشيل المحتوى
+  وبيسيب الخلفية معتمة. افحصها بـ: bin/check-alpha.sh
+-->
+<meta charset="utf-8"><title>كت‑أواي</title>
+<link rel="stylesheet" href="../fonts/fonts.css"><link rel="stylesheet" href="../tokens/digitalflow.css"><link rel="stylesheet" href="../scenes/base.css">
+<style>
+  .stage { justify-content:center; align-items:center; padding:48px 110px; }
+  .wrap  { width:1640px; }
+  .h     { text-align:center; font-size:40px; font-weight:700; color:var(--df-ink);
+           letter-spacing:-.5px; margin-bottom:32px; will-change:opacity,transform; }
+  .cols  { display:flex; gap:26px; align-items:stretch; }
+  .c     { flex:1; padding:32px 38px; border-radius:var(--df-r-lg);
+           background:var(--df-surface); border:1px solid var(--df-border);
+           box-shadow:var(--df-shadow-card); will-change:opacity,transform; }
+  .c .nm { font-size:34px; font-weight:700; color:var(--df-ink); line-height:1.25; }
+  .c .de { margin-top:16px; font-size:25px; font-weight:500; color:var(--df-ink-2);
+           line-height:1.55; will-change:opacity,transform; }
+  .foot  { margin-top:32px; text-align:center; font-size:42px; font-weight:700;
+           color:var(--df-ink); letter-spacing:-.5px; will-change:opacity,transform; }
+</style>
+<div class="root" id="root"><div class="cutbg"></div><div class="glow" id="g1"></div><div class="glow2" id="g2"></div>
+  <div class="stage"><div class="wrap">
+    <div class="h" id="h">العنوان بتاع الفكرة</div>
+    <div class="cols">
+      <!-- في RTL أول كارت في الـHTML بيروح يمين — خلي ده هو اللي بتشرحه الأول -->
+      <div class="c" id="c1"><div class="nm">الكارت الأول</div>
+        <div class="de" id="d1">الشرح بتاعه</div></div>
+      <div class="c" id="c2"><div class="nm">الكارت التاني</div>
+        <div class="de" id="d2">الشرح بتاعه</div></div>
+    </div>
+    <div class="foot" id="foot">الخلاصة <span class="accent">في سطر</span></div>
+  </div></div>
+</div>
+<script src="../scenes/anim.js"></script>
+<script>
+(() => {
+  const { win, rise, drift } = window.DF;
+  const root=document.getElementById('root'); const G=id=>document.getElementById(id);
+  const OUT=17.2;
+  window.SCENE={ width:1920, height:1080, duration:17.9,
+    seek(t){ drift(G('g1'),G('g2'),t);
+      rise(G('h'), t,0.00,0.55,16);
+      rise(G('c1'),t,0.60,0.65,24);
+      rise(G('d1'),t,3.40,0.50,14);
+      rise(G('c2'),t,7.20,0.65,24);
+      rise(G('d2'),t,9.80,0.50,14);
+      rise(G('foot'),t,13.60,0.55,18);
+      root.style.opacity=win(t,0,0.45)*(1-win(t,OUT,0.6));
+    }
+  };
+  window.SCENE.seek(0);
+})();
+</script>

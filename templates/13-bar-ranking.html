@@ -1,0 +1,74 @@
+<!--
+  قالب: أشرطة الترتيب
+  نِسبة بصرية بين أكتر من عنصرين على مسطرة واحدة
+
+  اللي تغيّره: الصفوف وقيمها في data-v، والوحدة في العنوان. مسطرة واحدة للكل — لو كل صف اتقاس على نفسه المقارنة بتتلغي.
+  التوقيت: كل رقم في AT هو ثواني من بداية المشهد، بتاخدها من words.txt.
+  الحجم: مش محتاج تحدّد scale — الكيت بياخده من project.json.
+-->
+<meta charset="utf-8"><title>أشرطة الترتيب</title>
+<link rel="stylesheet" href="../fonts/fonts.css"><link rel="stylesheet" href="../tokens/digitalflow.css"><link rel="stylesheet" href="../scenes/base.css">
+<style>
+  /* عمود الشمال — بره عمود الوش (اللي بيخلص عند x=1222) فالمتكلم فاضل ظاهر كامل.
+     ده النمط الوحيد اللي بيدي نسبة بصرية بين أكتر من عنصرين. */
+  .brank { position:absolute; left:96px; top:132px; width:556px;
+          background:var(--df-surface); border:1px solid var(--df-border);
+          border-radius:var(--df-r-lg); box-shadow:var(--df-shadow-raised);
+          padding:28px; will-change:opacity,transform; }
+  .b-ttl  { font-size:28px; font-weight:600; color:var(--df-ink-2); line-height:1.4;
+          margin-bottom:18px; will-change:opacity,transform; }
+  .brow { margin-top:22px; will-change:opacity,transform; }
+  .brow .top { display:flex; align-items:baseline; justify-content:space-between; gap:12px; }
+  .brow .nm  { font-size:24px; font-weight:600; color:var(--df-gray); }
+  .brow.hi .nm { color:var(--df-ink); font-weight:700; }
+  /* القراية بخط mono ومعزولة اتجاهياً عشان الرقم مايتقلبش جوه سطر عربي */
+  .brow .val { font-family:var(--df-font-mono); font-size:24px; font-weight:500;
+              color:var(--df-gray-2); direction:ltr; unicode-bidi:isolate; }
+  .brow.hi .val { color:#0B8A96; font-weight:600; }
+  .b-track{ margin-top:11px; height:20px; border-radius:10px; background:rgba(11,42,46,.07);
+          overflow:hidden; }
+  /* الطول هو المعلومة — ده الاستثناء الوحيد المسموح فيه تغيير الحجم */
+  /* الرمادي كان قريب أوي من لون المسار فالشريط مكانش باين */
+  .b-fill { height:100%; border-radius:10px; background:var(--df-gray); will-change:width; }
+  .brow.hi .b-fill { background:var(--df-gradient); box-shadow:var(--df-shadow-glow); }
+  .b-foot { margin-top:28px; padding-top:18px; border-top:1px solid var(--df-divider);
+          font-size:21px; font-weight:600; color:var(--df-ink-2); line-height:1.45;
+          will-change:opacity,transform; }
+  .b-foot b { color:#0B8A96; }
+</style>
+<div class="brank" id="card">
+  <div class="b-ttl" id="ttl">الوقت لحد أول نظام شغّال <span style="color:var(--df-gray-2)">(بالأيام)</span></div>
+  <div class="brow" data-r data-v="90"><div class="top"><span class="nm">شركة برمجة</span><span class="val">٩٠</span></div>
+    <div class="b-track"><div class="b-fill"></div></div></div>
+  <div class="brow" data-r data-v="30"><div class="top"><span class="nm">أداة جاهزة + تظبيط</span><span class="val">٣٠</span></div>
+    <div class="b-track"><div class="b-fill"></div></div></div>
+  <div class="brow hi" data-r data-v="7"><div class="top"><span class="nm">تبنيه بإيدك</span><span class="val">٧</span></div>
+    <div class="b-track"><div class="b-fill"></div></div></div>
+  <div class="b-foot" id="foot">نفس النتيجة — والفرق <b>مش في الأداة، في اللي بتكتبه</b></div>
+</div>
+<script src="../scenes/anim.js"></script>
+<script>
+(() => {
+  const { win, rise } = window.DF;
+  const card=document.getElementById('card');
+  const rows=[...document.querySelectorAll('[data-r]')];
+  // مسطرة واحدة لكل الصفوف — لو كل صف اتقاس على نفسه، المقارنة بتتلغي
+  const MAX = Math.max(...rows.map(r => +r.dataset.v));
+  const AT=[0.60, 3.20, 6.10];   // الكلمة اللي بتسمّي كل عنصر
+  const OUT=13.40;
+  window.SCENE={ width:1920, height:1080, duration:14.10,
+    seek(t){ const p=win(t,0,0.55);
+      card.style.opacity=p*(1-win(t,OUT,0.6));
+      card.style.transform=`translateX(${(1-p)*-40}px)`;
+      rise(document.getElementById('ttl'),t,0.10,0.5,14);
+      rows.forEach((el,i)=>{
+        rise(el,t,AT[i],0.45,12);
+        const g = win(t, AT[i]+0.15, 0.85) * (+el.dataset.v / MAX) * 100;
+        el.querySelector('.b-fill').style.width = Math.max(g, 0) + '%';
+      });
+      rise(document.getElementById('foot'),t,9.40,0.5,14);
+    }
+  };
+  window.SCENE.seek(0);
+})();
+</script>

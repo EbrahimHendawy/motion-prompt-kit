@@ -1,0 +1,29 @@
+{
+  "video": "/Users/ebrahimhendawy/Documents/Courses/VC1 VSL/VC1-VSL.mov",
+  "frame": [
+    3840,
+    2160
+  ],
+  "picture": [
+    3840,
+    2160
+  ],
+  "letterbox": {
+    "top": 0,
+    "bottom": 0
+  },
+  "fps": "24",
+  "fps_exact": [
+    24,
+    1
+  ],
+  "total_frames": 9314,
+  "duration": 388.083333,
+  "timecode": "01:00:00:00",
+  "timecode_frames": 86400,
+  "canvas": [
+    1920,
+    1080
+  ],
+  "scale": 2.0
+}

@@ -1,0 +1,83 @@
+<!--
+  قالب: شبكة الجدولة
+  متى وكام مرة جوّه دورة ثابتة
+
+  اللي تغيّره: الأيام الشغالة في ON، والأسابيع في WEEKS. الخانات بتتملى بالمجموعة مش واحدة واحدة.
+  التوقيت: كل رقم في AT هو ثواني من بداية المشهد، بتاخدها من words.txt.
+  الحجم: مش محتاج تحدّد scale — الكيت بياخده من project.json.
+-->
+<meta charset="utf-8"><title>شبكة الجدولة</title>
+<link rel="stylesheet" href="../fonts/fonts.css"><link rel="stylesheet" href="../tokens/digitalflow.css"><link rel="stylesheet" href="../scenes/base.css">
+<style>
+  /* الحاوية موجودة قبل المحتوى، والخانات الفاضية هي الحجة:
+     «٤ أيام بس في الأسبوع» بتتشاف مش بتتقال. */
+  .sg-head { display:flex; align-items:baseline; gap:14px; will-change:opacity,transform; }
+  .sg-head .t { font-size:26px; font-weight:700; color:var(--df-ink); }
+  .sg-head .c { display:inline-flex; align-items:center; gap:8px;
+                padding:6px 14px; border-radius:var(--df-r-pill);
+                background:rgba(34,179,152,.10); color:#0B8A96;
+                font-size:19px; font-weight:700; }
+  .sg-days { display:grid; grid-template-columns:76px repeat(7, 1fr); gap:6px;
+             margin-top:12px; }
+  .sg-days .d { font-size:16px; font-weight:600; color:var(--df-gray-2); text-align:center; }
+  .sg-grid { display:grid; grid-template-columns:76px repeat(7, 1fr); gap:6px; margin-top:5px; }
+  .sg-grid .wk { font-size:19px; font-weight:600; color:var(--df-gray);
+                 display:flex; align-items:center; }
+  .cell { height:42px; border-radius:10px; background:rgba(11,42,46,.05);
+          border:1px solid var(--df-border); will-change:opacity; }
+  .cell.on { background:var(--df-gradient); border-color:transparent;
+             box-shadow:var(--df-shadow-glow); }
+  .sg-foot { margin-top:14px; padding-top:13px; border-top:1px solid var(--df-divider);
+             font-size:22px; font-weight:600; color:var(--df-ink-2);
+             will-change:opacity,transform; }
+  .sg-foot b { color:#0B8A96; }
+</style>
+<div class="lower wide" id="box"><div class="bar"></div>
+  <div class="sg-head" id="head">
+    <span class="t">خطة ٣ أسابيع</span>
+    <span class="c">ساعة في اليوم</span>
+  </div>
+  <div class="sg-days">
+    <span></span>
+    <span class="d">سبت</span><span class="d">حد</span><span class="d">اتنين</span>
+    <span class="d">تلات</span><span class="d">أربع</span><span class="d">خميس</span><span class="d">جمعة</span>
+  </div>
+  <div class="sg-grid" id="grid"></div>
+  <div class="sg-foot" id="foot">١٢ يوم بس من ٢١ — <b>والباقي حياتك زي ما هي</b></div>
+</div>
+<script src="../scenes/anim.js"></script>
+<script>
+(() => {
+  const { win, rise } = window.DF;
+  const box=document.getElementById('box'), grid=document.getElementById('grid');
+  const WEEKS=['الأسبوع ١','الأسبوع ٢','الأسبوع ٣'];
+  // الأيام الشغالة في كل أسبوع (0 = سبت). ٤ أيام بس — والفاضي هو الرسالة.
+  const ON=[[0,1,3,4],[0,2,3,5],[1,2,4,5]];
+  const cells=[];
+  WEEKS.forEach((w,r)=>{
+    const lab=document.createElement('span'); lab.className='wk'; lab.textContent=w;
+    grid.appendChild(lab);
+    for(let c=0;c<7;c++){
+      const el=document.createElement('span');
+      el.className='cell'; el.dataset.row=r; el.dataset.col=c;
+      grid.appendChild(el); cells.push(el);
+    }
+  });
+  // الخانات بتتملى بالأسبوع مش واحدة واحدة — التتابع الفردي بيبقى لمعة وزينة
+  const AT=[2.10, 5.40, 8.60];
+  const OUT=14.00;
+  window.SCENE={ width:1920, height:1080, duration:14.70,
+    seek(t){ const p=win(t,0,0.55);
+      box.style.opacity=p*(1-win(t,OUT,0.55));
+      box.style.transform=`translateX(${(1-p)*70}px)`;
+      rise(document.getElementById('head'),t,0.00,0.45,12);
+      cells.forEach(el=>{
+        const r=+el.dataset.row, c=+el.dataset.col;
+        el.classList.toggle('on', ON[r].includes(c) && t>=AT[r]);
+      });
+      rise(document.getElementById('foot'),t,11.20,0.5,14);
+    }
+  };
+  window.SCENE.seek(0);
+})();
+</script>

@@ -1,0 +1,60 @@
+<!--
+  قالب: لوَر ثيرد عريض
+  الافتراضي — أي معلومة بتسند الكلام والمتكلم لازم يفضل ظاهر.
+
+  اللي تغيّره: النصوص، وتوقيت كل عنصر في نداءات rise().
+  التوقيت: كل رقم هو ثواني من بداية المشهد، بتاخدها من words.txt.
+  المكان: عريض وقصير عشان يقعد تحت الدقن. لو الكارت طلع طويل — وزّع المحتوى على
+          عمود تاني بدل ما تخليه يطلع لفوق. قيس بـ: node bin/measure.js
+-->
+<meta charset="utf-8"><title>لوَر ثيرد</title>
+<link rel="stylesheet" href="../fonts/fonts.css"><link rel="stylesheet" href="../tokens/digitalflow.css"><link rel="stylesheet" href="../scenes/base.css">
+<style>
+  .lower.wide .cols { align-items:center; }
+  .kick  { font-size:21px; font-weight:600; color:var(--df-gray); will-change:opacity,transform; }
+  .h     { margin-top:10px; font-size:42px; font-weight:700; color:var(--df-ink);
+           line-height:1.25; letter-spacing:-.6px; will-change:opacity,transform; }
+  .ln    { display:flex; align-items:flex-start; gap:13px; margin-top:14px;
+           font-size:26px; font-weight:600; color:var(--df-ink-2); line-height:1.4;
+           will-change:opacity,transform; }
+  .ln:first-child { margin-top:0; }
+  .ln .ico { margin-top:4px; }
+</style>
+<div class="lower wide" id="box"><div class="bar"></div>
+  <div class="cols">
+    <div style="flex:1">
+      <div class="kick" id="k">السطر الصغير اللي فوق</div>
+      <div class="h" id="h">العنوان الأساسي — <span class="accent">والكلمة المهمة</span></div>
+    </div>
+    <div class="sep"></div>
+    <div style="flex:0 0 520px">
+      <div class="ln" id="l1">
+        <svg class="ico" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>
+        <div>النقطة الأولى</div>
+      </div>
+      <div class="ln" id="l2">
+        <svg class="ico" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>
+        <div>النقطة التانية</div>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="../scenes/anim.js"></script>
+<script>
+(() => {
+  const { win, rise } = window.DF;
+  const box=document.getElementById('box'); const G=id=>document.getElementById(id);
+  const OUT=11.4;                       // الفيد أوت بيبدأ هنا — بعد آخر كلمة في الفكرة
+  window.SCENE={ width:1920, height:1080, duration:12.0,
+    seek(t){ const p=win(t,0,0.55);
+      box.style.opacity=p*(1-win(t,OUT,0.55));
+      box.style.transform=`translateX(${(1-p)*70}px)`;
+      rise(G('k'), t,0.00,0.45,12);
+      rise(G('h'), t,1.60,0.60,18);     // على الكلمة اللي بتقول العنوان
+      rise(G('l1'),t,4.20,0.50,14);
+      rise(G('l2'),t,7.10,0.50,14);
+    }
+  };
+  window.SCENE.seek(0);
+})();
+</script>

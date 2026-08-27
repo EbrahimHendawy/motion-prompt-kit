@@ -1,0 +1,61 @@
+<!--
+  قالب: الرقم الكبير
+  رقم واحد كبير في الركن مع شريط
+
+  اللي تغيّره: غيّر الرقم والسطر. الشريط طوله = النسبة — غيّرها في السطر اللي فيه *90.
+  التوقيت: كل رقم في AT (أو في نداءات rise) هو ثواني من بداية المشهد، بتاخدها من words.txt.
+  الحجم: مش محتاج تحدّد scale — الكيت بياخده من project.json.
+-->
+<meta charset="utf-8"><title>الرقم الكبير</title>
+<link rel="stylesheet" href="../fonts/fonts.css"><link rel="stylesheet" href="../tokens/digitalflow.css"><link rel="stylesheet" href="../scenes/base.css">
+<style>
+  /* One figure, one label, nothing else. Lives in the free corner so he stays uncovered.
+     The bar is allowed to grow because its length IS the number — that is the one
+     size-change the system permits. */
+  /* A number this size still needs a ground. Over a busy frame the glyphs read as noise
+     no matter how big they are — a corner wash costs nothing and fixes it completely. */
+  .scrim { position:absolute; left:0; bottom:0; width:1020px; height:700px;
+           background:radial-gradient(115% 95% at 0% 100%,
+             rgba(244,249,249,.97) 0%, rgba(244,249,249,.88) 42%,
+             rgba(244,249,249,.55) 68%, rgba(244,249,249,0) 100%);
+           will-change:opacity; }
+  .stat { position:absolute; left:96px; bottom:120px; width:620px;
+          will-change:opacity,transform; }
+  .v    { font-size:150px; font-weight:700; line-height:.92; letter-spacing:-5px;
+          background:var(--df-gradient); -webkit-background-clip:text; background-clip:text;
+          -webkit-text-fill-color:transparent; will-change:opacity,transform; }
+  .k    { margin-top:10px; font-size:32px; font-weight:700; color:var(--df-ink);
+          line-height:1.3;
+          will-change:opacity,transform; }
+  .track{ margin-top:22px; height:12px; border-radius:999px;
+          background:rgba(11,42,46,.10); overflow:hidden; will-change:opacity; }
+  .fill { height:100%; border-radius:999px; background:var(--df-gradient); will-change:width; }
+  .foot { margin-top:14px; font-size:22px; font-weight:600; color:var(--df-ink-2); will-change:opacity,transform; }
+</style>
+<div class="scrim" id="sc"></div>
+<div class="stat" id="s">
+  <div class="v" id="v">٩٠٪</div>
+  <div class="k" id="k">من الناس بتعامل الفايب كودينج<br>كأنه شات عادي</div>
+  <div class="track" id="tr"><div class="fill" id="fl"></div></div>
+  <div class="foot" id="ft">وده سبب إن الكريدتس بتخلص في يوم</div>
+</div>
+<script src="../scenes/anim.js"></script>
+<script>
+(() => {
+  const { win, rise } = window.DF;
+  const G=id=>document.getElementById(id);
+  const OUT=8.2;
+  window.SCENE={ width:1920, height:1080, duration:8.9,
+    seek(t){ const o=1-win(t,OUT,0.6);
+      G('sc').style.opacity=win(t,0,0.6)*o;
+      rise(G('v'), t,0.20,0.7,26);
+      rise(G('k'), t,1.30,0.6,18);
+      G('tr').style.opacity=win(t,2.90,0.4);
+      G('fl').style.width=(win(t,3.10,1.1)*90)+'%';   // length carries the 90%
+      rise(G('ft'),t,5.40,0.6,16);
+      G('s').style.opacity=o;
+    }
+  };
+  window.SCENE.seek(0);
+})();
+</script>

@@ -1,0 +1,69 @@
+<!--
+  قالب: القايمة اللي بتتشطب
+  قايمة بتتشطب عنصر عنصر
+
+  اللي تغيّره: كل العناصر ظاهرة من أول فريم باهتة. غيّر النصوص و AT — واحد لكل عنصر — وعدّل ٦ في العدّاد.
+  التوقيت: كل رقم في AT (أو في نداءات rise) هو ثواني من بداية المشهد، بتاخدها من words.txt.
+  الحجم: مش محتاج تحدّد scale — الكيت بياخده من project.json.
+-->
+<meta charset="utf-8"><title>القايمة اللي بتتشطب</title>
+<link rel="stylesheet" href="../fonts/fonts.css"><link rel="stylesheet" href="../tokens/digitalflow.css"><link rel="stylesheet" href="../scenes/base.css">
+<style>
+  /* Every item is on screen from frame one, dim. Only the verdict moves. By the last
+     frame the whole argument is one picture — which a list that appears one row at a
+     time never gives you. */
+  .box  { position:absolute; right:110px; bottom:96px; width:1000px;
+          background:var(--df-surface); border:1px solid var(--df-border);
+          border-radius:var(--df-r-lg); box-shadow:var(--df-shadow-raised);
+          padding:24px 30px; will-change:opacity,transform; }
+  .box .bar { position:absolute; inset-block:0; right:0; width:6px;
+          border-radius:var(--df-r-lg) 0 0 var(--df-r-lg); background:var(--df-gradient); }
+  .hd   { display:flex; align-items:baseline; gap:14px;
+          padding-bottom:14px; border-bottom:1px solid var(--df-divider); }
+  .hd .t{ font-size:26px; font-weight:700; color:var(--df-ink); }
+  .hd .c{ font-family:var(--df-font-mono); font-size:21px; color:var(--df-gray); direction:ltr; }
+  .grid { display:grid; grid-template-columns:1fr 1fr; gap:6px 28px; margin-top:12px; }
+  .it   { display:flex; align-items:center; gap:13px; padding:9px 4px; }
+  .it .m{ flex:0 0 auto; width:30px; height:30px; border-radius:var(--df-r-sm);
+          border:2px solid var(--df-gray-2); display:flex; align-items:center;
+          justify-content:center; }
+  .it .m svg { width:17px; height:17px; stroke:#fff; stroke-width:3;
+               fill:none; stroke-linecap:round; stroke-linejoin:round; }
+  .it .t{ font-size:23px; font-weight:600; color:var(--df-gray-2); }
+  .it.on .m { background:var(--df-gradient); border-color:transparent;
+              box-shadow:var(--df-shadow-glow); }
+  .it.on .t { color:var(--df-ink); }
+</style>
+<div class="box" id="box"><div class="bar"></div>
+  <div class="hd"><span class="t">البرومبت الكامل لازم يقول</span><span class="c" id="c">0 / 6</span></div>
+  <div class="grid">
+    <div class="it" data-i><span class="m"><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg></span><span class="t">مين المستخدم</span></div>
+    <div class="it" data-i><span class="m"><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg></span><span class="t">إيه المشكلة بالظبط</span></div>
+    <div class="it" data-i><span class="m"><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg></span><span class="t">إيه الشاشات المطلوبة</span></div>
+    <div class="it" data-i><span class="m"><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg></span><span class="t">اللغة والاتجاه RTL</span></div>
+    <div class="it" data-i><span class="m"><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg></span><span class="t">شكل البيانات</span></div>
+    <div class="it" data-i><span class="m"><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg></span><span class="t">إيه اللي مش عايزه</span></div>
+  </div>
+</div>
+<script src="../scenes/anim.js"></script>
+<script>
+(() => {
+  const { win } = window.DF;
+  const box=document.getElementById('box'), cnt=document.getElementById('c');
+  const its=[...document.querySelectorAll('[data-i]')];
+  const AT=[1.4,3.6,5.9,8.1,10.4,12.6];   // the word that names each item
+  const AR='٠١٢٣٤٥٦٧٨٩';
+  const ar=n=>String(n).split('').map(d=>AR[+d]).join('');
+  const OUT=15.2;
+  window.SCENE={ width:1920, height:1080, duration:15.9,
+    seek(t){ const p=win(t,0,0.55);
+      box.style.opacity=p*(1-win(t,OUT,0.5));
+      box.style.transform=`translateX(${(1-p)*70}px)`;
+      let n=0;
+      its.forEach((el,i)=>{ const on=t>=AT[i]; el.classList.toggle('on',on); if(on)n++; });
+      cnt.textContent=ar(n)+' / ٦';
+    }
+  };
+  window.SCENE.seek(0);
+})();
+</script>

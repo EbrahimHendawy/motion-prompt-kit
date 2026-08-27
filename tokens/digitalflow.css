@@ -1,0 +1,60 @@
+/* DigitalFlow Design System — tokens captured from claude.ai/design/p/66a2ad6b
+   Source of truth: the published design system. Keep in sync if it changes. */
+:root {
+  /* Brand ramp */
+  --df-teal-deep:   #0499AE;
+  --df-teal-green:  #22B398;
+  --df-green:       #74D85D;
+  --df-primary:     #0D9EA8;
+  --df-accent:      #74D85D;
+
+  /* Identity gradients */
+  --df-gradient:       linear-gradient(135deg, #0499AE 0%, #22B398 50%, #74D85D 100%);
+  --df-gradient-hero:  linear-gradient(135deg, #063C43 0%, #0A6E72 50%, #2FA88C 100%);
+
+  /* Neutrals — cool, teal-tinted */
+  --df-ink:        #0B2A2E;
+  --df-ink-2:      #274247;
+  --df-gray:       #5E7A78;
+  --df-gray-2:     #AFC4C2;
+  --df-border:     #E6F0EF;
+  --df-divider:    #F0F6F5;
+  --df-bg:         #F4F9F9;
+  --df-surface:    #FFFFFF;
+
+  /* Semantic */
+  --df-success: #22A98F;
+  --df-info:    #0D9EA8;
+  --df-warning: #F4A62A;
+  --df-error:   #E5484D;
+
+  /* Type */
+  --df-font:      "IBM Plex Sans Arabic", system-ui, sans-serif;
+  --df-font-mono: "IBM Plex Mono", ui-monospace, monospace;
+  --df-display-size: 48px;
+  --df-display-weight: 700;
+  --df-display-tracking: -0.5px;
+  --df-body-size: 16px;
+  --df-body-leading: 1.85;
+
+  /* Spacing — 4px base */
+  --df-1: 4px;  --df-2: 8px;  --df-3: 16px; --df-4: 24px;
+  --df-5: 32px; --df-6: 48px; --df-7: 64px;
+
+  /* Radii */
+  --df-r-sm:   8px;
+  --df-r-md:   12px;
+  --df-r-lg:   18px;
+  --df-r-pill: 999px;
+
+  /* Shadows */
+  --df-shadow-card:   0 2px 4px rgba(11,42,46,.04);
+  --df-shadow-raised: 0 8px 24px rgba(11,42,46,.10);
+  --df-shadow-glow:   0 8px 20px rgba(34,179,152,.32);
+
+  /* Motion — the system is deliberately restrained: no bounce, no flashy motion */
+  --df-ease: cubic-bezier(.22,.61,.36,1);
+  --df-t-fast: 150ms;
+  --df-t-base: 400ms;
+  --df-t-slow: 700ms;
+}

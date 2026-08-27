@@ -1,0 +1,7 @@
+{
+  "_": "بيتولّد من bin/plan.py — مش لازم تكتبه بإيدك. ده بس عشان تشوف شكله.",
+  "clips": [
+    { "scene": "01-promise",  "sec": 0.0,   "dur": 16.10, "frame": 0,   "frames": 386 },
+    { "scene": "02-no-code",  "sec": 16.60, "dur": 13.45, "frame": 398, "frames": 323 }
+  ]
+}

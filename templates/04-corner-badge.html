@@ -1,0 +1,51 @@
+<!--
+  قالب: بادچ الركن
+  بادچ صغير في الركن برقم الدرس وتقدّم
+
+  اللي تغيّره: غيّر النص و N (عدد الدروس) و CUR (الدرس الحالي). مفيش توقيت داخلي — بيدخل ويقعد.
+  التوقيت: كل رقم في AT (أو في نداءات rise) هو ثواني من بداية المشهد، بتاخدها من words.txt.
+  الحجم: مش محتاج تحدّد scale — الكيت بياخده من project.json.
+-->
+<meta charset="utf-8"><title>بادچ الركن</title>
+<link rel="stylesheet" href="../fonts/fonts.css"><link rel="stylesheet" href="../tokens/digitalflow.css"><link rel="stylesheet" href="../scenes/base.css">
+<style>
+  /* The cheapest overlay there is: a small persistent chip that answers "where am I?".
+     Costs almost no screen and can stay up for a whole lesson. */
+  .badge { position:absolute; left:80px; top:72px;
+           display:flex; align-items:center; gap:16px;
+           background:var(--df-surface); border:1px solid var(--df-border);
+           border-radius:var(--df-r-pill); box-shadow:var(--df-shadow-card);
+           padding:12px 22px 12px 16px; will-change:opacity,transform; }
+  .badge .k { font-size:21px; font-weight:700; color:var(--df-ink); }
+  .badge .s { font-size:19px; font-weight:600; color:var(--df-gray); }
+  .badge .d { width:1px; height:22px; background:var(--df-divider); }
+  .dots { display:flex; gap:6px; }
+  .dots i { width:9px; height:9px; border-radius:50%; background:var(--df-divider); display:block; }
+  .dots i.done { background:var(--df-gray-2); }
+  .dots i.on   { background:var(--df-gradient); width:24px; border-radius:999px; }
+</style>
+<div class="badge" id="b">
+  <span class="k">الجزء ٣</span>
+  <span class="d"></span>
+  <span class="s">الدرس ١٢ — الكريدتس</span>
+  <span class="d"></span>
+  <span class="dots" id="dots"></span>
+</div>
+<script src="../scenes/anim.js"></script>
+<script>
+(() => {
+  const { win } = window.DF;
+  const b=document.getElementById('b'), dots=document.getElementById('dots');
+  const N=8, CUR=4;
+  for(let i=0;i<N;i++){ const el=document.createElement('i');
+    el.className = i<CUR ? 'done' : (i===CUR ? 'on' : ''); dots.appendChild(el); }
+  const OUT=9.4;
+  window.SCENE={ width:1920, height:1080, duration:10.0,
+    seek(t){ const p=win(t,0,0.5);
+      b.style.opacity=p*(1-win(t,OUT,0.5));
+      b.style.transform=`translateY(${(1-p)*-24}px)`;
+    }
+  };
+  window.SCENE.seek(0);
+})();
+</script>

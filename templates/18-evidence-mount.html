@@ -1,0 +1,70 @@
+<!--
+  قالب: منصّة الدليل
+  إطار لصورة جاية من بره (سكرين شوت، إشعار)
+
+  اللي تغيّره: بدّل assets/example-screenshot.png بصورتك. ومسار الصورة في src، ومكان الحجب والتمييز بالنسبة المئوية — قيسهم من صورتك مش بالتخمين.
+  التوقيت: كل رقم في AT هو ثواني من بداية المشهد، بتاخدها من words.txt.
+  الحجم: مش محتاج تحدّد scale — الكيت بياخده من project.json.
+-->
+<meta charset="utf-8"><title>منصّة الدليل</title>
+<link rel="stylesheet" href="../fonts/fonts.css"><link rel="stylesheet" href="../tokens/digitalflow.css"><link rel="stylesheet" href="../scenes/base.css">
+<style>
+  /* النمط الوحيد اللي بيقبل bitmap من بره الهوية: سكرين شوت، إشعار، لوحة نتايج.
+     القاعدة الأهم: الصورة نفسها متتلمسش — لا فلتر ولا شفافية ولا blend.
+     أي معالجة بتحوّل الدليل لديكور وبتخسر قيمته كإثبات.
+     المكان: العمود اليمين (x 1300–1860)، بعيد عن عمود الوش اللي بيخلص عند 1222. */
+  .ev { position:absolute; right:60px; top:250px; width:560px;
+        will-change:opacity,transform; }
+  .ev-cap { display:flex; align-items:center; gap:11px; margin-bottom:12px;
+        font-size:21px; font-weight:700; color:var(--df-ink-2);
+        will-change:opacity,transform; }
+  .ev-cap .ic { width:30px; height:30px; flex:0 0 auto; border-radius:var(--df-r-sm);
+        background:rgba(34,179,152,.12); display:flex; align-items:center; justify-content:center; }
+  .ev-cap svg { width:17px; height:17px; stroke:#0B8A96; stroke-width:2; fill:none;
+        stroke-linecap:round; stroke-linejoin:round; }
+  /* الإطار من الهوية، والمحتوى جوّاه أجنبي ومتساب زي ما هو */
+  .ev-frame { position:relative; border-radius:var(--df-r-lg); overflow:hidden;
+        background:var(--df-surface); border:1px solid var(--df-border);
+        box-shadow:var(--df-shadow-raised); }
+  .ev-frame img { display:block; width:100%; height:auto; }
+  /* الحجب مستطيل صريح مش blur — الـblur بيقرا كإخفاء مشبوه */
+  .redact { position:absolute; background:var(--df-ink); border-radius:4px; opacity:.92; }
+  /* الإطار بيوجّه العين للسطر اللي المتكلم بيقراه، من غير ما يعدّل الصورة */
+  .focus { position:absolute; border:3px solid var(--df-primary); border-radius:10px;
+        box-shadow:0 0 0 9999px rgba(244,249,249,.62); will-change:opacity; }
+  /* السطر ده لازم يبقى مقروء فوق أي خلفية — التوضيح جزء من مصداقية الدليل */
+  .ev-note { margin-top:12px; font-size:19px; font-weight:700; color:var(--df-ink-2);
+        text-shadow:0 1px 12px rgba(244,249,249,.95), 0 0 22px rgba(244,249,249,.85);
+        will-change:opacity,transform; }
+</style>
+<div class="ev" id="card">
+  <div class="ev-cap" id="cap">
+    <span class="ic"><svg viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-12.3 7.4L3 20.5l1.7-5.5A8.4 8.4 0 1 1 21 11.5Z"/></svg></span>
+    رسالة وصلتني امبارح
+  </div>
+  <div class="ev-frame">
+    <img src="assets/example-screenshot.png" alt="محادثة">
+    <span class="redact" style="left:68.4%; top:3.4%; width:19.9%; height:10.1%"></span>
+    <span class="focus" id="focus" style="left:50.3%; top:76.4%; width:48.2%; height:23.9%; opacity:0"></span>
+  </div>
+  <div class="ev-note" id="note">الاسم متحجوب — الرسالة زي ما هي</div>
+</div>
+<script src="../scenes/anim.js"></script>
+<script>
+(() => {
+  const { win, rise } = window.DF;
+  const card=document.getElementById('card');
+  const OUT=13.20;
+  window.SCENE={ width:1920, height:1080, duration:13.90,
+    seek(t){ const p=win(t,0,0.6);
+      card.style.opacity=p*(1-win(t,OUT,0.6));
+      card.style.transform=`translateX(${(1-p)*50}px)`;
+      rise(document.getElementById('cap'),t,0.00,0.45,12);
+      // التمييز بيتأخر: الصورة الأول تتقرا، وبعدين نوجّه للسطر اللي بيتقال
+      document.getElementById('focus').style.opacity=win(t,5.60,0.5)*(1-win(t,11.40,0.5));
+      rise(document.getElementById('note'),t,2.20,0.45,10);
+    }
+  };
+  window.SCENE.seek(0);
+})();
+</script>

@@ -1,0 +1,62 @@
+<!--
+  قالب: بلوك البرومبت
+  بلوك نص مكتوب بيتكشف سطر سطر
+
+  اللي تغيّره: سطر لكل جملة منطوقة. متعملهاش حرف حرف — مستحيل تظبطها على الصوت.
+  التوقيت: كل رقم في AT (أو في نداءات rise) هو ثواني من بداية المشهد، بتاخدها من words.txt.
+  الحجم: مش محتاج تحدّد scale — الكيت بياخده من project.json.
+-->
+<meta charset="utf-8"><title>بلوك البرومبت</title>
+<link rel="stylesheet" href="../fonts/fonts.css"><link rel="stylesheet" href="../tokens/digitalflow.css"><link rel="stylesheet" href="../scenes/base.css">
+<style>
+  /* Reveal a written block LINE by line, never character by character. Per-character
+     typing is expensive to render, impossible to time to speech, and reads as a gimmick.
+     One line per spoken clause tracks the voice exactly. */
+  /* Anchored to the bottom, not the side: he sits centre-frame, so a tall right-hand
+     panel would climb into his face. Wide and short keeps it under his chin. */
+  .panel { position:absolute; right:100px; bottom:88px; width:1240px;
+           background:var(--df-surface); border:1px solid var(--df-border);
+           border-radius:var(--df-r-lg); box-shadow:var(--df-shadow-raised);
+           overflow:hidden; will-change:opacity,transform; }
+  .top   { display:flex; align-items:center; justify-content:space-between;
+           padding:16px 22px; border-bottom:1px solid var(--df-divider);
+           background:var(--df-divider); }
+  .top .l{ font-family:var(--df-font-mono); font-size:18px; color:var(--df-gray); direction:ltr; }
+  .top .n{ font-size:19px; font-weight:700; color:#0B8A96; }
+  .body  { padding:14px 24px 18px; }
+  .l     { display:flex; gap:14px; padding:6px 0; will-change:opacity,transform; }
+  .l .g  { flex:0 0 26px; font-family:var(--df-font-mono); font-size:17px;
+           color:var(--df-gray-2); text-align:left; direction:ltr; padding-top:5px; }
+  .l .x  { font-size:23px; font-weight:600; color:var(--df-ink-2); line-height:1.5; }
+  .l .x b{ color:var(--df-ink); }
+  .l + .l { border-top:1px solid var(--df-divider); }
+  .top .h{ font-size:20px; font-weight:700; color:#0B8A96; will-change:opacity,transform; }
+</style>
+<div class="panel" id="p">
+  <div class="top"><span class="l">prompt.md</span><span class="h" id="f">كل سطر بيجاوب على سؤال الأداة بتسأله لوحدها</span><span class="n">٤ أسطر بس</span></div>
+  <div class="body">
+    <div class="l" data-l><span class="g">01</span><span class="x"><b>مين:</b> صاحب متجر منزلي بيستقبل أوردرات على واتساب</span></div>
+    <div class="l" data-l><span class="g">02</span><span class="x"><b>المشكلة:</b> الأوردرات بتتنسي في نص الرسايل الشخصية</span></div>
+    <div class="l" data-l><span class="g">03</span><span class="x"><b>الشاشات:</b> تسجيل أوردر · قايمة أوردرات اليوم · بحث بالاسم</span></div>
+    <div class="l" data-l><span class="g">04</span><span class="x"><b>القيود:</b> عربي RTL · موبايل أول · من غير تسجيل دخول</span></div>
+  </div>
+</div>
+<script src="../scenes/anim.js"></script>
+<script>
+(() => {
+  const { win, rise } = window.DF;
+  const p=document.getElementById('p');
+  const ls=[...document.querySelectorAll('[data-l]')];
+  const AT=[0.6,3.1,5.9,8.8];   // one cue per spoken clause
+  const OUT=13.8;
+  window.SCENE={ width:1920, height:1080, duration:14.5,
+    seek(t){ const q=win(t,0,0.55);
+      p.style.opacity=q*(1-win(t,OUT,0.5));
+      p.style.transform=`translateX(${(1-q)*70}px)`;
+      ls.forEach((el,i)=>rise(el,t,AT[i],0.5,14));
+      rise(document.getElementById('f'),t,11.4,0.5,12);
+    }
+  };
+  window.SCENE.seek(0);
+})();
+</script>

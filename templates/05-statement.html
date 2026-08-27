@@ -1,0 +1,51 @@
+<!--
+  قالب: الجملة على الشاشة
+  جملة واحدة كبيرة على الشاشة
+
+  اللي تغيّره: قسّم الجملة على سطرين وحطّ توقيت كل نص في AT. استخدمه مرة أو اتنين في الفيديو كله بالكتير.
+  التوقيت: كل رقم في AT (أو في نداءات rise) هو ثواني من بداية المشهد، بتاخدها من words.txt.
+  الحجم: مش محتاج تحدّد scale — الكيت بياخده من project.json.
+-->
+<meta charset="utf-8"><title>الجملة على الشاشة</title>
+<link rel="stylesheet" href="../fonts/fonts.css"><link rel="stylesheet" href="../tokens/digitalflow.css"><link rel="stylesheet" href="../scenes/base.css">
+<style>
+  /* No card, no chrome — just the sentence, over a wash that lifts it off the footage.
+     For the one line in a section you want people to quote back at you. */
+  .wash { position:absolute; inset:0;
+          background:linear-gradient(180deg, rgba(244,249,249,.92) 0%, rgba(244,249,249,.86) 100%);
+          will-change:opacity; }
+  .mid  { position:absolute; inset:0; display:flex; flex-direction:column;
+          align-items:center; justify-content:center; padding:0 220px; }
+  .line { font-size:82px; font-weight:700; color:var(--df-ink);
+          letter-spacing:-1.6px; line-height:1.28; text-align:center;
+          will-change:opacity,transform; }
+  .line + .line { margin-top:10px; }
+  .sub  { margin-top:34px; font-size:28px; font-weight:600; color:var(--df-gray);
+          will-change:opacity,transform; }
+</style>
+<div class="root" id="root">
+  <div class="wash"></div>
+  <div class="mid">
+    <div class="line" data-l>الأداة <span class="accent">بتنفّذ</span>.</div>
+    <div class="line" data-l>هي مش بتفكّر مكانك.</div>
+    <div class="sub" id="sub">لو أديتها كلام عام — هترجّعلك كلام عام</div>
+  </div>
+</div>
+<script src="../scenes/anim.js"></script>
+<script>
+(() => {
+  const { win, rise } = window.DF;
+  const root=document.getElementById('root');
+  const ls=[...document.querySelectorAll('[data-l]')];
+  const AT=[0.35,2.30];       // one cue per half of the sentence
+  const OUT=7.6;
+  window.SCENE={ width:1920, height:1080, duration:8.4,
+    seek(t){
+      ls.forEach((el,i)=>rise(el,t,AT[i],0.65,22));
+      rise(document.getElementById('sub'),t,4.60,0.6,16);
+      root.style.opacity=win(t,0,0.55)*(1-win(t,OUT,0.7));
+    }
+  };
+  window.SCENE.seek(0);
+})();
+</script>

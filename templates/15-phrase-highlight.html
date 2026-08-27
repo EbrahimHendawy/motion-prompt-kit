@@ -1,0 +1,70 @@
+<!--
+  قالب: تظليل العبارة
+  تظليل عبارة جوه نص موجود
+
+  اللي تغيّره: النص جوه mark tags، وتوقيت كل عبارة في AT. الحد ٤ عبارات والمثالي ٣.
+  التوقيت: كل رقم في AT هو ثواني من بداية المشهد، بتاخدها من words.txt.
+  الحجم: مش محتاج تحدّد scale — الكيت بياخده من project.json.
+-->
+<meta charset="utf-8"><title>تظليل العبارة</title>
+<link rel="stylesheet" href="../fonts/fonts.css"><link rel="stylesheet" href="../tokens/digitalflow.css"><link rel="stylesheet" href="../scenes/base.css">
+<style>
+  /* النمط الوحيد اللي بيشتغل جوّه الجملة. النص كامل قدام المشاهد من أول لحظة،
+     والصوت بيمشي عليه جزء جزء — فهو عارف إنت واقف فين. */
+  .ph-tag { display:inline-flex; align-items:center; gap:9px; align-self:flex-start;
+            padding:8px 16px; border-radius:var(--df-r-sm);
+            background:rgba(34,179,152,.10); color:#0B8A96; font-size:19px; font-weight:700;
+            will-change:opacity,transform; }
+  .ph-txt { margin-top:16px; font-size:34px; font-weight:600; color:var(--df-gray);
+            line-height:1.65; will-change:opacity,transform; }
+  /* العبارة النشطة: النص بيغمق ووراه أرضية خفيفة. مفيش حركة — التغيير في اللون بس */
+  .ph-txt mark { background:transparent; color:inherit; padding:3px 8px;
+                 border-radius:7px; }
+  .ph-txt mark.on { background:rgba(34,179,152,.14); color:var(--df-ink); font-weight:700; }
+  .ph-txt mark.done { color:var(--df-ink-2); }
+  .ph-note{ margin-top:16px; padding-top:14px; border-top:1px solid var(--df-divider);
+            display:flex; align-items:center; gap:12px; min-height:46px; }
+  .ph-note .k { font-size:20px; font-weight:700; color:var(--df-gray-2); }
+  .ph-note .v { font-size:24px; font-weight:700; color:#0B8A96; will-change:opacity; }
+</style>
+<div class="lower wide" id="box"><div class="bar"></div>
+  <div class="ph-tag" id="tag">كلام العميل بالنص</div>
+  <div class="ph-txt" id="txt">
+    «عايز حاجة <mark data-m>تنظّملي الأوردرات</mark> اللي بتيجي
+    <mark data-m>على الواتساب</mark> وكمان <mark data-m>تفكّرني بالمواعيد</mark>»
+  </div>
+  <div class="ph-note">
+    <span class="k">اللي طلعناه منها:</span>
+    <span class="v" id="v0" style="opacity:0">المشكلة الأساسية</span>
+    <span class="v" id="v1" style="opacity:0">مصدر البيانات</span>
+    <span class="v" id="v2" style="opacity:0">طلب تاني مخفي</span>
+  </div>
+</div>
+<script src="../scenes/anim.js"></script>
+<script>
+(() => {
+  const { win, rise } = window.DF;
+  const box=document.getElementById('box');
+  const ms=[...document.querySelectorAll('[data-m]')];
+  // كل عبارة بتولّع على أول كلمة فيها. عبارة واحدة نشطة في المرة.
+  const AT=[2.40, 6.10, 9.80], HOLD=3.0;
+  const OUT=14.10;
+  window.SCENE={ width:1920, height:1080, duration:14.80,
+    seek(t){ const p=win(t,0,0.55);
+      box.style.opacity=p*(1-win(t,OUT,0.55));
+      box.style.transform=`translateX(${(1-p)*70}px)`;
+      rise(document.getElementById('tag'),t,0.00,0.45,12);
+      rise(document.getElementById('txt'),t,0.35,0.55,16);
+      ms.forEach((el,i)=>{
+        const on = t>=AT[i] && t<AT[i]+HOLD;
+        el.classList.toggle('on', on);
+        el.classList.toggle('done', t>=AT[i]+HOLD);
+        const v=document.getElementById('v'+i);
+        v.style.opacity = on ? win(t,AT[i]+0.25,0.35) : 0;
+        v.style.display = on ? '' : 'none';
+      });
+    }
+  };
+  window.SCENE.seek(0);
+})();
+</script>

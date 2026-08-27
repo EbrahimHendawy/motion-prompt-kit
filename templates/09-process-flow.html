@@ -1,0 +1,59 @@
+<!--
+  قالب: تدفّق الخطوات
+  تدفّق: مدخل ← معالجة ← مخرج
+
+  اللي تغيّره: الأسهم بتروح شمال في العربي. المدخل أول عنصر (يمين) والمخرج آخر واحد (شمال).
+  التوقيت: كل رقم في AT (أو في نداءات rise) هو ثواني من بداية المشهد، بتاخدها من words.txt.
+  الحجم: مش محتاج تحدّد scale — الكيت بياخده من project.json.
+-->
+<meta charset="utf-8"><title>تدفّق الخطوات</title>
+<link rel="stylesheet" href="../fonts/fonts.css"><link rel="stylesheet" href="../tokens/digitalflow.css"><link rel="stylesheet" href="../scenes/base.css">
+<style>
+  /* In RTL the flow runs right to left: input on the right, output on the left, and the
+     arrowheads point LEFT. Getting this backwards is the single most common RTL bug. */
+  .band { position:absolute; left:0; right:0; bottom:88px; padding:0 110px;
+          will-change:opacity,transform; }
+  .inner{ background:var(--df-surface); border:1px solid var(--df-border);
+          border-radius:var(--df-r-lg); box-shadow:var(--df-shadow-raised);
+          padding:26px 32px; }
+  .flow { display:flex; align-items:stretch; gap:20px; }
+  .node { flex:1; padding:20px 22px; border-radius:var(--df-r-md);
+          background:var(--df-divider); border:1px solid var(--df-border);
+          will-change:opacity,transform; }
+  .node.hero { background:rgba(34,179,152,.08); border-color:#CFE9E4; }
+  .node .k { font-size:18px; font-weight:700; color:var(--df-gray); letter-spacing:.3px; }
+  .node .t { margin-top:7px; font-size:27px; font-weight:700; color:var(--df-ink); line-height:1.25; }
+  .node.hero .t { color:#0B8A96; }
+  .node .d { margin-top:6px; font-size:19px; font-weight:500; color:var(--df-gray); }
+  .arw  { flex:0 0 auto; display:flex; align-items:center; will-change:opacity; }
+  .arw svg { width:44px; height:26px; stroke:var(--df-gray-2); stroke-width:2.4;
+             fill:none; stroke-linecap:round; stroke-linejoin:round; }
+</style>
+<div class="band" id="band"><div class="inner">
+  <div class="flow">
+    <div class="node" data-n><div class="k">المدخل</div><div class="t">مشكلة حقيقية</div><div class="d">مكتوبة بجملة واحدة</div></div>
+    <div class="arw" data-a><svg viewBox="0 0 44 26"><path d="M42 13H4"/><path d="m12 5-8 8 8 8"/></svg></div>
+    <div class="node hero" data-n><div class="k">المعالجة</div><div class="t">برومبت محدّد</div><div class="d">مين + إيه + إزاي</div></div>
+    <div class="arw" data-a><svg viewBox="0 0 44 26"><path d="M42 13H4"/><path d="m12 5-8 8 8 8"/></svg></div>
+    <div class="node" data-n><div class="k">المخرج</div><div class="t">نظام شغّال</div><div class="d">أونلاين ولينك حقيقي</div></div>
+  </div>
+</div></div>
+<script src="../scenes/anim.js"></script>
+<script>
+(() => {
+  const { win, rise } = window.DF;
+  const band=document.getElementById('band');
+  const ns=[...document.querySelectorAll('[data-n]')], as=[...document.querySelectorAll('[data-a]')];
+  const NAT=[0.3,3.4,6.8], AAT=[2.6,6.0];
+  const OUT=10.4;
+  window.SCENE={ width:1920, height:1080, duration:11.2,
+    seek(t){ const p=win(t,0,0.55);
+      band.style.opacity=p*(1-win(t,OUT,0.5));
+      band.style.transform=`translateY(${(1-p)*30}px)`;
+      ns.forEach((el,i)=>rise(el,t,NAT[i],0.55,16));
+      as.forEach((el,i)=>{ el.style.opacity=win(t,AAT[i],0.4); });
+    }
+  };
+  window.SCENE.seek(0);
+})();
+</script>

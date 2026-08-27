@@ -1,0 +1,73 @@
+<!--
+  قالب: اقتباس موثّق
+  كلام حد تاني بإسناد قابل للتحقق
+
+  اللي تغيّره: الاقتباس والاسم والصفة والمصدر. الإسناد بيتأخر عن الكلام عن قصد.
+  التوقيت: كل رقم في AT هو ثواني من بداية المشهد، بتاخدها من words.txt.
+  الحجم: مش محتاج تحدّد scale — الكيت بياخده من project.json.
+-->
+<meta charset="utf-8"><title>اقتباس موثّق</title>
+<link rel="stylesheet" href="../fonts/fonts.css"><link rel="stylesheet" href="../tokens/digitalflow.css"><link rel="stylesheet" href="../scenes/base.css">
+<style>
+  /* كلام حد تاني — مش كلامك. عشان كده مش full-width زي اللوَر ثيرد:
+     العرض ١١٨٠ بيخلّيه حاسس إنه «مسحوب من على جنب» مش صوت البيت.
+     والإسناد لازم يبقى مقروء لدرجة إنه قابل للتحقق، مش سطر بيهرب. */
+  .tq { position:absolute; right:100px; bottom:88px; width:1180px;
+        background:var(--df-surface); border:1px solid var(--df-border);
+        border-radius:var(--df-r-lg); box-shadow:var(--df-shadow-raised);
+        padding:26px 32px; will-change:opacity,transform; }
+  .tq .bar { position:absolute; inset-block:0; right:0; width:6px;
+        border-radius:var(--df-r-lg) 0 0 var(--df-r-lg); background:var(--df-gradient); }
+  .tq-mark { font-size:56px; font-weight:700; line-height:.6; color:var(--df-gray-2);
+        opacity:.5; will-change:opacity,transform; }
+  .tq-txt  { margin-top:6px; font-size:36px; font-weight:600; color:var(--df-ink);
+        line-height:1.5; will-change:opacity,transform; }
+  .tq-by   { display:flex; align-items:center; gap:16px; margin-top:20px;
+        padding-top:18px; border-top:1px solid var(--df-divider);
+        will-change:opacity,transform; }
+  .tq-av   { width:56px; height:56px; flex:0 0 auto; border-radius:var(--df-r-pill);
+        background:var(--df-gradient); box-shadow:var(--df-shadow-glow);
+        display:flex; align-items:center; justify-content:center;
+        color:#fff; font-size:22px; font-weight:700; }
+  .tq-who  { display:flex; flex-direction:column; line-height:1.35; }
+  .tq-who b{ font-size:24px; font-weight:700; color:var(--df-ink); }
+  .tq-who span { font-size:20px; font-weight:500; color:var(--df-gray); }
+  .tq-src  { margin-inline-start:auto; display:inline-flex; align-items:center; gap:9px;
+        padding:8px 16px; border-radius:var(--df-r-sm);
+        background:var(--df-divider); border:1px solid var(--df-border);
+        font-size:18px; font-weight:600; color:var(--df-gray); }
+  .tq-src svg { width:18px; height:18px; stroke:var(--df-gray-2); stroke-width:2;
+        fill:none; stroke-linecap:round; stroke-linejoin:round; }
+</style>
+<div class="tq" id="card"><div class="bar"></div>
+  <div class="tq-mark" id="mark">‟</div>
+  <div class="tq-txt" id="txt">أنا عمري ما كتبت كود في حياتي. في خمس أيام بقى عندي نظام
+    بيسجّل أوردرات المحل وبفتحه من الموبايل.</div>
+  <div class="tq-by" id="by">
+    <span class="tq-av">م</span>
+    <span class="tq-who"><b>محمد عبد الله</b><span>صاحب محل ملابس — المنصورة</span></span>
+    <span class="tq-src">
+      <svg viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-12.3 7.4L3 20.5l1.7-5.5A8.4 8.4 0 1 1 21 11.5Z"/></svg>
+      رسالة واتساب
+    </span>
+  </div>
+</div>
+<script src="../scenes/anim.js"></script>
+<script>
+(() => {
+  const { win, rise } = window.DF;
+  const card=document.getElementById('card');
+  const OUT=12.60;
+  window.SCENE={ width:1920, height:1080, duration:13.30,
+    seek(t){ const p=win(t,0,0.55);
+      card.style.opacity=p*(1-win(t,OUT,0.55));
+      card.style.transform=`translateX(${(1-p)*70}px)`;
+      rise(document.getElementById('mark'),t,0.10,0.4,10);
+      rise(document.getElementById('txt'),t,0.30,0.6,18);
+      // الإسناد بيتأخر: الكلام الأول، وبعدين مين قاله — كده المشاهد بيسمع قبل ما يحكم
+      rise(document.getElementById('by'),t,5.20,0.55,16);
+    }
+  };
+  window.SCENE.seek(0);
+})();
+</script>

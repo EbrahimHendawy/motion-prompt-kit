@@ -1,0 +1,87 @@
+<!--
+  قالب: خريطة الأرباع
+  لما القرار على بُعدين في نفس الوقت
+
+  اللي تغيّره: أسماء المحاور وإحداثيات النقط. في RTL «أكتر» على الشمال. وليبلات SVG لازم text-anchor=middle.
+  التوقيت: كل رقم في AT هو ثواني من بداية المشهد، بتاخدها من words.txt.
+  الحجم: مش محتاج تحدّد scale — الكيت بياخده من project.json.
+-->
+<meta charset="utf-8"><title>خريطة الأرباع</title>
+<link rel="stylesheet" href="../fonts/fonts.css"><link rel="stylesheet" href="../tokens/digitalflow.css"><link rel="stylesheet" href="../scenes/base.css">
+<style>
+  /* لما القرار على بُعدين مع بعض. أي ترتيب خطي هيكدب لأنه بيرمي بُعد.
+     نفس مكان أشرطة الترتيب — عمود الشمال، بره عمود الوش. */
+  .qmap { position:absolute; left:96px; top:120px; width:556px;
+          background:var(--df-surface); border:1px solid var(--df-border);
+          border-radius:var(--df-r-lg); box-shadow:var(--df-shadow-raised);
+          padding:28px; will-change:opacity,transform; }
+  .q-ttl{ font-size:26px; font-weight:600; color:var(--df-ink-2); line-height:1.4;
+          margin-bottom:16px; will-change:opacity,transform; }
+  .q-svg{ display:block; width:100%; height:auto; }
+  .ax   { stroke:var(--df-gray-2); stroke-width:2; }
+  .grid { stroke:rgba(11,42,46,.07); stroke-width:1; }
+  .alab { font-family:var(--df-font); font-size:17px; font-weight:700; fill:var(--df-gray); }
+  .aend { font-family:var(--df-font); font-size:15px; font-weight:600; fill:var(--df-gray-2); }
+  .pt   { will-change:opacity; }
+  .pt circle { fill:var(--df-gray-2); }
+  .pt text   { font-family:var(--df-font); font-size:18px; font-weight:600; fill:var(--df-gray); }
+  .pt.hi circle { fill:url(#g); r:13; }
+  .pt.hi text   { font-size:19px; font-weight:700; fill:var(--df-ink); }
+  .q-foot{ margin-top:18px; padding-top:16px; border-top:1px solid var(--df-divider);
+           font-size:21px; font-weight:600; color:var(--df-ink-2); line-height:1.45;
+           will-change:opacity,transform; }
+  .q-foot b { color:#0B8A96; }
+</style>
+<div class="qmap" id="card">
+  <div class="q-ttl" id="ttl">القرار على بُعدين مش واحد</div>
+  <svg class="q-svg" viewBox="0 0 480 360" xmlns="http://www.w3.org/2000/svg">
+    <defs><linearGradient id="g" x1="0" y1="1" x2="1" y2="0">
+      <stop offset="0" stop-color="#0499AE"/><stop offset=".5" stop-color="#22B398"/>
+      <stop offset="1" stop-color="#74D85D"/></linearGradient></defs>
+    <g id="axes" opacity="0">
+      <line class="grid" x1="240" y1="70" x2="240" y2="278"/>
+      <line class="grid" x1="66" y1="174" x2="412" y2="174"/>
+      <line class="ax" x1="66" y1="278" x2="412" y2="278"/>
+      <line class="ax" x1="412" y1="70" x2="412" y2="278"/>
+      <!-- في نص عربي، text-anchor=start بيثبّت الطرف اليمين والنص بيمتد شمال.
+           middle بتشيل الالتباس ده خالص — كل ليبل متمركز على نقطة معلومة. -->
+      <!-- ليبلات المحور الرأسي بره خط المحور عشان ما تتزاحمش مع النقط -->
+      <text class="alab" x="440" y="56" text-anchor="middle">التكلفة</text>
+      <text class="aend" x="440" y="96" text-anchor="middle">أكتر</text>
+      <text class="aend" x="440" y="264" text-anchor="middle">أقل</text>
+      <text class="alab" x="152" y="338" text-anchor="middle">التحكّم في الحل</text>
+      <text class="aend" x="92" y="302" text-anchor="middle">أكتر</text>
+      <text class="aend" x="388" y="302" text-anchor="middle">أقل</text>
+    </g>
+    <!-- الليبل فوق النقطة بـanchor=middle: كده مفيش أي تعارض مع اتجاه النص -->
+    <g class="pt" data-p><circle cx="344" cy="118" r="10"/>
+      <text x="344" y="96" text-anchor="middle">شركة برمجة</text></g>
+    <g class="pt" data-p><circle cx="306" cy="226" r="10"/>
+      <text x="306" y="204" text-anchor="middle">أداة جاهزة</text></g>
+    <g class="pt hi" data-p><circle cx="132" cy="242" r="13"/>
+      <text x="132" y="217" text-anchor="middle">تبنيه بإيدك</text></g>
+  </svg>
+  <div class="q-foot" id="foot">الركن اللي إنت عايزه: <b>تكلفة أقل وتحكّم أكتر</b></div>
+</div>
+<script src="../scenes/anim.js"></script>
+<script>
+(() => {
+  const { win, rise } = window.DF;
+  const card=document.getElementById('card');
+  const pts=[...document.querySelectorAll('[data-p]')];
+  const AT=[2.60, 5.10, 7.90];   // الكلمة اللي بتسمّي كل خيار
+  const OUT=13.60;
+  window.SCENE={ width:1920, height:1080, duration:14.30,
+    seek(t){ const p=win(t,0,0.55);
+      card.style.opacity=p*(1-win(t,OUT,0.6));
+      card.style.transform=`translateX(${(1-p)*-40}px)`;
+      rise(document.getElementById('ttl'),t,0.10,0.5,14);
+      // المحاور وأسماء البعدين الأول — من غيرها النقط مالهاش معنى
+      document.getElementById('axes').style.opacity=win(t,0.70,0.6);
+      pts.forEach((el,i)=>{ el.style.opacity=win(t,AT[i],0.5); });
+      rise(document.getElementById('foot'),t,10.30,0.5,14);
+    }
+  };
+  window.SCENE.seek(0);
+})();
+</script>

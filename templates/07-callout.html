@@ -1,0 +1,66 @@
+<!--
+  قالب: التعليق بسهم
+  سهم بيشاور على حاجة موجودة في الكادر
+
+  اللي تغيّره: أهم حاجة: إحداثيات النقطة. حدّدها من bin/3-safezones.sh وغيّر d= في الـpath و left/top في الـdot.
+  التوقيت: كل رقم في AT (أو في نداءات rise) هو ثواني من بداية المشهد، بتاخدها من words.txt.
+  الحجم: مش محتاج تحدّد scale — الكيت بياخده من project.json.
+-->
+<meta charset="utf-8"><title>التعليق بسهم</title>
+<link rel="stylesheet" href="../fonts/fonts.css"><link rel="stylesheet" href="../tokens/digitalflow.css"><link rel="stylesheet" href="../scenes/base.css">
+<style>
+  /* Points at something that is really in the frame — a screen, a button, an object.
+     The leader line is drawn in SVG so the anchor point is an exact pixel, not a guess. */
+  .lead { position:absolute; inset:0; }
+  .lead svg { width:100%; height:100%; }
+  /* Two copies of the same path: a white one underneath so the line stays visible over
+     dark footage, the brand colour on top. */
+  .lead .halo { stroke:#FFFFFF; stroke-width:9; fill:none; stroke-linecap:round; opacity:.85; }
+  .lead .ink  { stroke:var(--df-primary); stroke-width:4; fill:none; stroke-linecap:round; }
+  .dot  { position:absolute; width:26px; height:26px; border-radius:50%;
+          border:4px solid var(--df-primary); background:rgba(255,255,255,.55);
+          box-shadow:0 0 0 3px rgba(255,255,255,.75);
+          will-change:opacity,transform; }
+  .cal  { position:absolute; width:520px; padding:22px 26px;
+          background:var(--df-surface); border:1px solid var(--df-border);
+          border-radius:var(--df-r-lg); box-shadow:var(--df-shadow-raised);
+          will-change:opacity,transform; }
+  .cal .t { font-size:26px; font-weight:700; color:var(--df-ink); line-height:1.3; }
+  .cal .d { margin-top:8px; font-size:21px; font-weight:500; color:var(--df-gray);
+            line-height:1.5; }
+</style>
+<div class="lead"><svg viewBox="0 0 1920 1080" preserveAspectRatio="none">
+  <path class="halo" id="lh" d="M1452 486 L1452 596 L1392 656"/>
+  <path class="ink"  id="ln" d="M1452 486 L1452 596 L1392 656"/>
+</svg></div>
+<div class="dot" id="dot" style="left:1437px; top:473px"></div>
+<div class="cal" id="cal" style="left:1180px; top:668px">
+  <div class="t">هنا بتحطّ الـ Knowledge</div>
+  <div class="d">إعدادات المشروع ← قسم Knowledge. اللي بتكتبه هنا بيتطبّق على كل محادثة في المشروع.</div>
+</div>
+<script src="../scenes/anim.js"></script>
+<script>
+(() => {
+  const { win, rise } = window.DF;
+  const G=id=>document.getElementById(id);
+  const ln=G('ln'), lh=G('lh'), L=ln.getTotalLength();
+  ln.style.strokeDasharray=L; lh.style.strokeDasharray=L;
+  const OUT=8.8;
+  window.SCENE={ width:1920, height:1080, duration:9.5,
+    seek(t){
+      const o=1-win(t,OUT,0.5);
+      // dot lands first, then the line draws toward the card, then the card opens
+      const dp=win(t,0.10,0.45);
+      G('dot').style.opacity=dp*o;
+      G('dot').style.transform=`scale(${0.6+dp*0.4})`;
+      const dr=L*(1-win(t,0.45,0.55));
+      ln.style.strokeDashoffset=dr; lh.style.strokeDashoffset=dr;
+      ln.parentElement.parentElement.style.opacity=win(t,0.45,0.2)*o;
+      const cp=win(t,1.05,0.5);
+      G('cal').style.opacity=cp*o;
+      G('cal').style.transform=`translateY(${(1-cp)*16}px)`;
+    }
+  };
+  window.SCENE.seek(0);
+})();
+</script>
