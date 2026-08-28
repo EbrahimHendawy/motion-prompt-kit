@@ -12,11 +12,24 @@ if [ -z "$T" ] || [ -z "$NAME" ]; then
   exit 1
 fi
 SRC="$DIR/templates/$T.html"
-[ -f "$SRC" ] || { echo "مفيش قالب اسمه $T"; exit 1; }
+# القوالب مرقّمة (01-lower-third)، بس البرومبت بيبعت الاسم المجرّد (lower-third).
+# لو الاسم المظبوط مش موجود، دوّر على نفس الاسم بأي رقم قبله.
+if [ ! -f "$SRC" ]; then
+  M=$(ls "$DIR/templates"/[0-9][0-9]-"$T".html 2>/dev/null | head -1)
+  [ -n "$M" ] && SRC="$M"
+fi
+[ -f "$SRC" ] || {
+  echo "مفيش قالب اسمه $T"
+  echo "الموجود:"; ls "$DIR/templates"/*.html | xargs -n1 basename | sed 's/\.html$//' | sed 's/^/  /'
+  exit 1
+}
 OUT="$DIR/scenes/$NAME.html"
 [ -f "$OUT" ] && { echo "$NAME.html موجود بالفعل — اختار اسم تاني"; exit 1; }
+# القالب الوحيد اللي بياخد صورة من بره (18-evidence-mount) بيشاور على
+# templates/assets/ — لازم يتظبط كمان وإلا الصورة بتتكسر بعد النسخ.
 sed -e 's|\.\./scenes/base\.css|base.css|' \
     -e 's|\.\./scenes/anim\.js|anim.js|' \
+    -e 's|src="assets/|src="../templates/assets/|' \
     "$SRC" > "$OUT"
-echo "-> scenes/$NAME.html   (من قالب $T)"
+echo "-> scenes/$NAME.html   (من قالب $(basename "$SRC" .html))"
 echo "افتحه، غيّر النص، وحطّ توقيت كل عنصر من words.txt"

@@ -27,7 +27,27 @@ with open(DIR + "/words.txt", "w") as f:
         f.write("%4d %8.2f %8.2f  %s\n"
                 % (i, s["offsets"]["from"]/1000, s["offsets"]["to"]/1000, s["text"].strip()))
 print("%d كلمة — آخر كلمة عند %.2fs" % (len(ws), ws[-1]["offsets"]["to"]/1000))
-print("-> transcript.json  و  words.txt")
+# كابشنز SRT — بنجمّع الكلمات في جُمَل قصيرة. whisper بيطلّع كلمة في السطر
+# بسبب --max-len 1، واللي كويس للتوقيت بس بايظ ككابشن، فبنعيد تجميعه هنا.
+def ts(sec):
+    h, r = divmod(sec, 3600); m, sec = divmod(r, 60)
+    return ("%02d:%02d:%06.3f" % (h, m, sec)).replace(".", ",")
+
+MAXW, MAXSEC, MAXGAP = 7, 4.0, 0.6
+cues, cur = [], []
+for w in ws:
+    a, b = w["offsets"]["from"]/1000, w["offsets"]["to"]/1000
+    if cur and (len(cur) >= MAXW or b - cur[0][0] > MAXSEC or a - cur[-1][1] > MAXGAP):
+        cues.append(cur); cur = []
+    cur.append((a, b, w["text"].strip()))
+if cur: cues.append(cur)
+
+with open(DIR + "/captions.srt", "w") as f:
+    for i, c in enumerate(cues, 1):
+        f.write("%d\n%s --> %s\n%s\n\n" % (i, ts(c[0][0]), ts(c[-1][1]), " ".join(x[2] for x in c)))
+
+print("%d كابشن في captions.srt" % len(cues))
+print("-> transcript.json  و  words.txt  و  captions.srt")
 print("\nwords.txt هو اللي هتاخد منه توقيت كل عنصر. دوّر فيه بـ:")
 print("   grep 'الكلمة' words.txt")
 PY

@@ -14,6 +14,11 @@ if command -v ffmpeg >/dev/null; then say "ffmpeg" "موجود ✓"; else
 if command -v node >/dev/null; then say "node" "$(node -v) ✓"; else
   say "node" "ناقص ✗   ->  brew install node"; OK=0; fi
 
+# ستة سكربتات في bin/ بتنادي python3، واتنين منهم python3 من الشيبانج.
+# على ماك من غير أدوات Xcode، python3 موجود كستَب بيفتح نافذة تثبيت بدل ما يشتغل.
+if python3 -c "import sys" >/dev/null 2>&1; then say "python3" "$(python3 -V 2>&1 | cut -d' ' -f2) ✓"; else
+  say "python3" "ناقص ✗   ->  xcode-select --install   (أو brew install python)"; OK=0; fi
+
 if command -v whisper-cli >/dev/null; then say "whisper-cli" "موجود ✓"; else
   say "whisper-cli" "ناقص ✗   ->  brew install whisper-cpp"; OK=0; fi
 
