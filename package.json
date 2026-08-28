@@ -1,6 +1,7 @@
 {
-  "name": "vibe-anim-kit",
+  "name": "motion-prompt-kit",
   "version": "1.0.0",
+  "license": "MIT",
   "description": "أنيميشن جرافيك على فيديو talking-head عربي — HTML/CSS إلى ProRes 4444 بألفا إلى تايملاين",
   "private": true,
   "type": "commonjs",
