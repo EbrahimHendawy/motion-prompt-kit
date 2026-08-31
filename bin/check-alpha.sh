@@ -6,10 +6,18 @@
 # rest of the shot. Stills won't show it — only the alpha channel will.
 set -e
 DIR="$(cd "$(dirname "$0")/.." && pwd)"
-FILES=${@:-$(ls "$DIR"/out/*.mov)}
+# مصفوفة مش سلسلة: المسار اللي فيه مسافة كان بينقسم لأجزاء والسكربت
+# يدوّر على ملفات مش موجودة. ده بيحصل لأي حد مجلده فيه مسافة في اسمه.
+if [ $# -gt 0 ]; then
+  FILES=("$@")
+else
+  FILES=()
+  for f in "$DIR"/out/*.mov; do [ -e "$f" ] && FILES+=("$f"); done
+fi
+[ ${#FILES[@]} -eq 0 ] && { echo "مفيش ماسترز في out/ — شغّل bin/5-render.sh الأول"; exit 1; }
 echo "بقيس قناة الألفا عند آخر فريم في كل ماستر…"
 echo
-for f in $FILES; do
+for f in "${FILES[@]}"; do
   [ -f "$f" ] || f="$DIR/out/$f.mov"
   NAME=$(basename "$f" .mov)
   N=$(ffprobe -v error -select_streams v:0 -show_entries stream=nb_frames -of csv=p=0 "$f" | head -1)
