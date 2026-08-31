@@ -3,9 +3,11 @@
 #
 # Two traps live in this file:
 #
-#  * The scale step is not optional. check.js writes at canvas size (say 1920x1080) while
-#    the footage is 4K, so overlaying straight puts every card at half size in the corner.
-#    Scale the FOOTAGE down to the canvas first, then overlay.
+#  * The scale step is not optional, and it is the RENDER size that matters, not the
+#    canvas size. check.js writes at canvas x scale (a 1920x1080 canvas at scale 2 gives
+#    a 3840x2160 shot). Scale the FOOTAGE to that same size before the overlay. Scaling
+#    it to the bare canvas instead makes every card render at double size, sitting over
+#    the speaker's face — which looks like a layout mistake, not a scaling one.
 #
 #  * ffmpeg reads stdin. Inside a `while read` loop it will swallow the next lines of
 #    input, and you get scenes silently skipped or names mangled ("02-x" arriving as
@@ -13,9 +15,12 @@
 set -e
 DIR="$(cd "$(dirname "$0")/.." && pwd)"
 V=$(python3 -c "import json;print(json.load(open('$DIR/project.json'))['video'])")
+# check.js يرندر بمقاس الكانفاس × الـscale، فالفيديو لازم يتظبط على المقاس ده هو كمان
+# مش على الكانفاس لوحده — وإلا الكارت بيطلع بضعف حجمه ومقصوص من فوق الوش.
 read CW CH TOP < <(python3 -c "
 import json;c=json.load(open('$DIR/project.json'))
-print(c['canvas'][0], c['canvas'][1], c['letterbox']['top'])")
+s=c.get('scale',1)
+print(int(c['canvas'][0]*s), int(c['canvas'][1]*s), c['letterbox']['top'])")
 mkdir -p "$DIR/review"
 
 if [ -n "$1" ] && [ -n "$2" ] && [ -n "$3" ]; then
