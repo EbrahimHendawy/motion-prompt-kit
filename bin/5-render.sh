@@ -29,7 +29,22 @@ export -f one; export DIR OUT FPS
 if [ $# -gt 0 ]; then
   printf '%s\n' "$@" | sed "s|^|$DIR/scenes/|; s|$|.html|" | xargs -P "$JOBS" -I{} bash -c 'one "$@"' _ {}
 else
-  ls "$DIR"/scenes/[0-9]*.html | xargs -P "$JOBS" -I{} bash -c 'one "$@"' _ {}
+  # timeline.json هو مصدر الحقيقة. الجلوب على الأرقام كان بيسيب أي مشهد اسمه
+  # مابيبدأش برقم من غير رندر ومن غير رسالة — الرندر بيخلص "بنجاح" وout/ فاضية.
+  if [ -f "$DIR/timeline.json" ]; then
+    python3 -c "
+import json,sys,os
+d=json.load(open('$DIR/timeline.json'))
+miss=[c['scene'] for c in d['clips'] if not os.path.exists('$DIR/scenes/%s.html'%c['scene'])]
+if miss:
+    sys.stderr.write('!! مشاهد في timeline.json ملهاش ملفات: %s\n' % '، '.join(miss)); sys.exit(1)
+print('\n'.join('$DIR/scenes/%s.html'%c['scene'] for c in d['clips']))
+" | xargs -P "$JOBS" -I{} bash -c 'one "$@"' _ {}
+  else
+    N=$(ls "$DIR"/scenes/[0-9]*.html 2>/dev/null | wc -l | tr -d ' ')
+    [ "$N" = "0" ] && { echo "مفيش مشاهد في scenes/ ولا timeline.json — مفيش حاجة تترندر"; exit 1; }
+    ls "$DIR"/scenes/[0-9]*.html | xargs -P "$JOBS" -I{} bash -c 'one "$@"' _ {}
+  fi
 fi
 echo; ls -lh "$OUT"/*.mov | awk '{print $5, $9}'
 echo
