@@ -1,6 +1,10 @@
 /* Shared shell for every scene. Scene-specific rules live in the scene file. */
 * { margin:0; padding:0; box-sizing:border-box; }
-html, body { width:1920px; height:1080px; overflow:hidden; }
+/* المقاس بيجي من الكانفاس مش مثبّت. الأفقي بيفضل 1920x1080 زي ما كان،
+   والرأسي (ريلز 9:16) بياخد 1080x1920 من غير ما يتكتب في كل مشهد.
+   المشهد بيقدر يغيّرهم بـ:  :root { --w:1080px; --h:1920px }  */
+:root { --w:1920px; --h:1080px; }
+html, body { width:var(--w); height:var(--h); overflow:hidden; }
 body {
   font-family: var(--df-font);
   direction: rtl;

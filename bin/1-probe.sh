@@ -79,10 +79,20 @@ cfg = {
   "fps": key, "fps_exact": [num, den],
   "total_frames": frames, "duration": float(dursec),
   "timecode": tc or None, "timecode_frames": tc_frames,
-  # the canvas always matches the PICTURE's aspect, so a letterboxed source still
-  # renders overlays at exactly the delivered size
-  "canvas": [1920, round(1920 * pic_h / W / 2) * 2],
-  "scale": round(W / 1920, 6),
+  # The canvas always matches the PICTURE's aspect, so a letterboxed source still
+  # renders overlays at exactly the delivered size.
+  #
+  # Which side gets pinned to 1920 depends on orientation. Pinning the WIDTH on a
+  # vertical 1080x1920 source gives a 1920x3414 canvas at scale 0.56 — a canvas taller
+  # than any screen, where every type size in the templates is wrong. Pin the LONG side.
+  **(lambda pin: {
+      "canvas": pin,
+      "scale": round(W / pin[0], 6),
+  })(
+      [1920, round(1920 * pic_h / W / 2) * 2] if W >= pic_h
+      else [round(1920 * W / pic_h / 2) * 2, 1920]
+  ),
+  "orientation": "landscape" if W >= pic_h else "portrait",
 }
 json.dump(cfg, open(os.path.join(DIR, "project.json"), "w"), ensure_ascii=False, indent=2)
 print()
